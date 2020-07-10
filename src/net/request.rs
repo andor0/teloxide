@@ -4,6 +4,10 @@ use serde::{de::DeserializeOwned, Serialize};
 use crate::{requests::ResponseResult, RequestError};
 
 use super::{TelegramResponse, TELEGRAM_API_URL};
+use reqwest::header::CONNECTION;
+use std::time::Duration;
+
+const DELAY_ON_SERVER_ERROR: Duration = Duration::from_secs(10);
 
 pub async fn request_multipart<T>(
     client: &Client,
@@ -16,6 +20,7 @@ where
 {
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
+        .header(CONNECTION, "keep-alive")
         .multipart(params)
         .send()
         .await
@@ -36,6 +41,7 @@ where
 {
     let response = client
         .post(&super::method_url(TELEGRAM_API_URL, token, method_name))
+        .header(CONNECTION, "keep-alive")
         .json(params)
         .send()
         .await
@@ -48,6 +54,10 @@ async fn process_response<T>(response: Response) -> ResponseResult<T>
 where
     T: DeserializeOwned,
 {
+    if response.status().is_server_error() {
+        tokio::time::delay_for(DELAY_ON_SERVER_ERROR).await;
+    }
+
     serde_json::from_str::<TelegramResponse<T>>(
         &response.text().await.map_err(RequestError::NetworkError)?,
     )
