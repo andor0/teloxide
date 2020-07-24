@@ -3,8 +3,9 @@ use crate::{
     requests::{
         DeleteMessage, EditMessageCaption, EditMessageText, ForwardMessage,
         PinChatMessage, Request, ResponseResult, SendAnimation, SendAudio,
-        SendContact, SendDocument, SendLocation, SendMediaGroup, SendMessage,
-        SendPhoto, SendSticker, SendVenue, SendVideo, SendVideoNote, SendVoice,
+        SendContact, SendDice, SendDocument, SendLocation, SendMediaGroup,
+        SendMessage, SendPhoto, SendSticker, SendVenue, SendVideo,
+        SendVideoNote, SendVoice,
     },
     types::{ChatId, ChatOrInlineMessage, InputFile, InputMedia, Message},
     Bot,
@@ -67,6 +68,9 @@ impl UpdateWithCx<Message> {
         self.bot.send_animation(self.update.chat.id, animation)
     }
 
+    pub fn answer_dice(&self) -> SendDice {
+        self.bot.send_dice(self.update.chat.id)
+    }
     pub fn answer_document(&self, document: InputFile) -> SendDocument {
         self.bot.send_document(self.update.chat.id, document)
     }

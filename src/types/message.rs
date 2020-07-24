@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{
     chat::{ChatKind, PublicChatKind},
-    Animation, Audio, Chat, ChatPublic, Contact, Document, Game,
+    Animation, Audio, Chat, ChatPublic, Contact, Dice, Document, Game,
     InlineKeyboardMarkup, Invoice, Location, MessageEntity, PassportData,
     PhotoSize, Poll, PublicChatChannel, PublicChatSupergroup, Sticker,
     SuccessfulPayment, True, User, Venue, Video, VideoNote, Voice,
@@ -24,6 +24,8 @@ pub struct Message {
 
     /// Conversation the message belongs to.
     pub chat: Chat,
+
+    pub dice: Option<Dice>,
 
     #[serde(flatten)]
     pub kind: MessageKind,
@@ -916,6 +918,9 @@ mod getters {
                 }
                 _ => None,
             }
+        }
+        pub fn dice(&self) -> Option<&types::Dice> {
+            self.dice.as_ref()
         }
     }
 }

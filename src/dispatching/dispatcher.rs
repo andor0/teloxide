@@ -5,7 +5,7 @@ use crate::{
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
     types::{
-        CallbackQuery, ChosenInlineResult, InlineQuery, Message, Poll,
+        CallbackQuery, ChosenInlineResult, Dice, InlineQuery, Message, Poll,
         PollAnswer, PreCheckoutQuery, ShippingQuery, UpdateKind,
     },
     Bot,
@@ -64,6 +64,7 @@ pub struct Dispatcher {
     pre_checkout_queries_queue: Tx<PreCheckoutQuery>,
     polls_queue: Tx<Poll>,
     poll_answers_queue: Tx<PollAnswer>,
+    dice_queue: Tx<Dice>,
 }
 
 impl Dispatcher {
@@ -83,6 +84,7 @@ impl Dispatcher {
             pre_checkout_queries_queue: None,
             polls_queue: None,
             poll_answers_queue: None,
+            dice_queue: None,
         }
     }
 
@@ -199,6 +201,15 @@ impl Dispatcher {
         self
     }
 
+    #[must_use]
+    pub fn dice_handler<H>(mut self, h: H) -> Self
+    where
+        H: DispatcherHandler<Dice> + 'static + Send,
+    {
+        self.dice_queue = self.new_tx(h);
+        self
+    }
+
     /// Starts your bot with the default parameters.
     ///
     /// The default parameters are a long polling update listener and log all
@@ -245,6 +256,14 @@ impl Dispatcher {
                     };
 
                     match update.kind {
+                        UpdateKind::Dice(dice) => {
+                            send!(
+                                &self.bot,
+                                &self.dice_queue,
+                                dice,
+                                UpdateKind::Dice
+                            );
+                        }
                         UpdateKind::Message(message) => {
                             send!(
                                 &self.bot,

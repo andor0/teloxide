@@ -10,7 +10,7 @@ use crate::{
         GetGameHighScores, GetMe, GetStickerSet, GetUpdates,
         GetUserProfilePhotos, GetWebhookInfo, KickChatMember, LeaveChat,
         PinChatMessage, PromoteChatMember, RestrictChatMember, SendAnimation,
-        SendAudio, SendChatAction, SendChatActionKind, SendContact,
+        SendAudio, SendChatAction, SendChatActionKind, SendContact, SendDice,
         SendDocument, SendGame, SendInvoice, SendLocation, SendMediaGroup,
         SendMessage, SendPhoto, SendPoll, SendSticker, SendVenue, SendVideo,
         SendVideoNote, SendVoice, SetChatAdministratorCustomTitle,
@@ -209,6 +209,13 @@ impl Bot {
             Some(parse_mode) => SendAudio::new(self.clone(), chat_id, audio)
                 .parse_mode(*parse_mode.deref()),
         }
+    }
+
+    pub fn send_dice<C>(&self, chat_id: C) -> SendDice
+    where
+        C: Into<ChatId>,
+    {
+        SendDice::new(self.clone(), chat_id)
     }
 
     /// Use this method to send general files.

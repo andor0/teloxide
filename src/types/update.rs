@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    CallbackQuery, Chat, ChosenInlineResult, InlineQuery, Message, Poll,
+    CallbackQuery, Chat, ChosenInlineResult, Dice, InlineQuery, Message, Poll,
     PollAnswer, PreCheckoutQuery, ShippingQuery, User,
 };
 use serde_json::Value;
@@ -97,6 +97,8 @@ pub enum UpdateKind {
     /// A user changed their answer in a non-anonymous poll. Bots receive new
     /// votes only in polls that were sent by the bot itself.
     PollAnswer(PollAnswer),
+
+    Dice(Dice),
 }
 
 impl Update {
